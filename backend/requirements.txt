@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+yt-dlp
+youtube-transcript-api
+google-genai
+openai
+anthropic
+groq
+python-dotenv
+sse-starlette

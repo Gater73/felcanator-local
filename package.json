@@ -1,0 +1,17 @@
+{
+  "name": "felcanator-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "setup:backend": "cd backend && python3 -m venv venv && ./venv/bin/pip install -r requirements.txt",
+    "setup:backend:win": "cd backend && python -m venv venv && .\\venv\\Scripts\\pip install -r requirements.txt",
+    "setup:frontend": "cd frontend && npm install",
+    "setup": "npm install && (npm run setup:backend || npm run setup:backend:win) && npm run setup:frontend",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && (./venv/bin/python main.py || .\\venv\\Scripts\\python main.py)",
+    "start": "npx concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

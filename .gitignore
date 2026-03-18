@@ -1,0 +1,60 @@
+# Dependências (Node / Python)
+node_modules/
+backend/venv/
+venv/
+env/
+
+# Configurações de Ambiente (Segurança)
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+*.local
+
+# Arquivos de Build
+frontend/dist/
+dist/
+dist-ssr/
+
+# Python: Artefatos e Caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+develop-eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Arquivos Gerados pelo SO
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editores / IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
