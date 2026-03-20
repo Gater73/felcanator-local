@@ -40,6 +40,8 @@ Before running the app, ensure you have installed on your computer:
 3. Rename it to exactly `.env` (remove the `.example` part).
 4. Open this new `.env` file in Notepad (Windows) or TextEdit (Mac) and paste your API key/endpoint configuration next to the provider you chose. For `lmstudio` and `ollama`, set `LMSTUDIO_BASE_URL`/`OLLAMA_BASE_URL` and `LMSTUDIO_MODEL`/`OLLAMA_MODEL` (API key may be optional depending on your local setup). Save and close.
 
+*Note for LM-Studio Users: Context length for a single video is 8000+ and context length for a channel starts at 10000+*
+
 ### 🚀 How to Run (Simple & Fool-Proof)
 1. Open your **Terminal** (Mac/Linux) or **Command Prompt/PowerShell** (Windows).
 2. Navigate to this project's folder.
@@ -79,6 +81,8 @@ Antes de rodar o programa, você precisa ter instalado no seu computador:
 2. Encontre o arquivo chamado `.env.example`.
 3. Renomeie esse arquivo para exatamente `.env` (apague a parte final `.example`).
 4. Abra esse novo arquivo `.env` no Bloco de Notas (Windows) ou Editor de Texto (Mac) e cole a chave de API/endpoint no campo correto. Para `lmstudio` e `ollama`, configure `LMSTUDIO_BASE_URL`/`OLLAMA_BASE_URL` e `LMSTUDIO_MODEL`/`OLLAMA_MODEL` (a API key pode ser opcional dependendo do seu setup local). Salve e feche.
+
+*Nota para usuários do LM-Studio: Context Length para um vídeo é 8000+ e Context Length para um canal começa em 10000+*
 
 ### 🚀 Como Rodar (À Prova de Falhas)
 1. Abra o seu **Terminal** (Mac/Linux) ou **Prompt de Comando / PowerShell** (Windows).
