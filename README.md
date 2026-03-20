@@ -63,6 +63,7 @@ npm run setup && npm start
 <p align="center">
   <img src="assets/felcanator_principal.jpeg" width="48%" alt="Felcanator Main App" />
   <img src="assets/felcanator_secondary.jpeg" width="48%" alt="Felcanator Channel Analysis" />
+  <img src="assets/felcanator-local.png" width="48%" alt="Felcanator Local via LM-Studio" />
 </p>
 
 ### ✨ Principais Funcionalidades
