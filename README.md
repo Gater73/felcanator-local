@@ -20,10 +20,11 @@
 <p align="center">
   <img src="assets/felcanator_principal.jpeg" width="48%" alt="Felcanator Main App" />
   <img src="assets/felcanator_secondary.jpeg" width="48%" alt="Felcanator Channel Analysis" />
+  <img src="assets/felcanator-local.png" width="48%" alt="Felcanator Local via LM-Studio" />
 </p>
 
 ### ✨ Key Features
-- **🤖 Multi-LLM Support**: Choose between Google Gemini 2.0 Flash (Default), OpenAI (GPT-4o mini), Anthropic (Claude 3 Haiku), or Groq (Llama 3).
+- **🤖 Multi-LLM Support**: Choose between Google Gemini 2.0 Flash (Default), OpenAI (GPT-4o mini), Anthropic (Claude 3 Haiku), Groq (Llama 3), LM-Studio (local), or Ollama (local).
 - **⚡ Real-Time Channel Processing**: Watch results appear one-by-one instantly as the AI analyzes entire channel playlists using Server-Sent Events (SSE).
 - **🔞 Smart Age-Restriction Bypass**: Automatically detects YouTube's native age-restricted videos and instantly flags them without wasting API tokens.
 - **📝 Deep Transcript Auditing**: Downloads and processes actual video transcripts to catch hidden profanity, violence, and suggestive themes.
@@ -38,7 +39,9 @@ Before running the app, ensure you have installed on your computer:
 1. Open the `backend/` folder on your computer.
 2. Find the file named `.env.example`.
 3. Rename it to exactly `.env` (remove the `.example` part).
-4. Open this new `.env` file in Notepad (Windows) or TextEdit (Mac) and paste your API Key next to the provider you chose. Save and close.
+4. Open this new `.env` file in Notepad (Windows) or TextEdit (Mac) and paste your API key/endpoint configuration next to the provider you chose. For `lmstudio` and `ollama`, set `LMSTUDIO_BASE_URL`/`OLLAMA_BASE_URL` and `LMSTUDIO_MODEL`/`OLLAMA_MODEL` (API key may be optional depending on your local setup). Save and close.
+
+*Note for LM-Studio Users: Context length for a single video is 8000+ and context length for a channel starts at 10000+*
 
 ### 🚀 How to Run (Simple & Fool-Proof)
 1. Open your **Terminal** (Mac/Linux) or **Command Prompt/PowerShell** (Windows).
@@ -60,10 +63,11 @@ npm run setup && npm start
 <p align="center">
   <img src="assets/felcanator_principal.jpeg" width="48%" alt="Felcanator Main App" />
   <img src="assets/felcanator_secondary.jpeg" width="48%" alt="Felcanator Channel Analysis" />
+  <img src="assets/felcanator-local.png" width="48%" alt="Felcanator Local via LM-Studio" />
 </p>
 
 ### ✨ Principais Funcionalidades
-- **🤖 Múltiplos Motores de IA**: Controle o cérebro da operação escolhendo entre Google Gemini 2.0 Flash, OpenAI (GPT-4o mini), Anthropic (Claude 3) ou Groq (Llama 3 ultra-rápido).
+- **🤖 Múltiplos Motores de IA**: Controle o cérebro da operação escolhendo entre Google Gemini 2.0 Flash, OpenAI (GPT-4o mini), Anthropic (Claude 3) ou Groq (Llama 3), LM-Studio (local) ou Ollama (local).
 - **⚡ Análise de Canais em Tempo Real**: Cole o link de um canal e assista aos *cards* de resultados pularem na tela um a um via SSE (Streaming), sem travar o navegador.
 - **🔞 Auto-Flag de Restrição de Idade**: O backend detecta imediatamente se o YouTube marcou o vídeo como +18 e aplica a punição ("FLAG") instantaneamente, economizando tempo e tokens da IA.
 - **📝 Auditoria Profunda de Transcrição**: Não julga o livro pela capa. O sistema baixa a legenda do vídeo para caçar palavrões ocultos, apologia à violência ou temas complexos, contornando o limite de tamanho (truncamento inteligente).
@@ -78,7 +82,9 @@ Antes de rodar o programa, você precisa ter instalado no seu computador:
 1. Abra a pasta `backend/` no seu computador.
 2. Encontre o arquivo chamado `.env.example`.
 3. Renomeie esse arquivo para exatamente `.env` (apague a parte final `.example`).
-4. Abra esse novo arquivo `.env` no Bloco de Notas (Windows) ou Editor de Texto (Mac) e cole a chave de API que você pegou lá no site da IA no campo correto. Salve e feche.
+4. Abra esse novo arquivo `.env` no Bloco de Notas (Windows) ou Editor de Texto (Mac) e cole a chave de API/endpoint no campo correto. Para `lmstudio` e `ollama`, configure `LMSTUDIO_BASE_URL`/`OLLAMA_BASE_URL` e `LMSTUDIO_MODEL`/`OLLAMA_MODEL` (a API key pode ser opcional dependendo do seu setup local). Salve e feche.
+
+*Nota para usuários do LM-Studio: Context Length para um vídeo é 8000+ e Context Length para um canal começa em 10000+*
 
 ### 🚀 Como Rodar (À Prova de Falhas)
 1. Abra o seu **Terminal** (Mac/Linux) ou **Prompt de Comando / PowerShell** (Windows).

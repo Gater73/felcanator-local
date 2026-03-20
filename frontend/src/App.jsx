@@ -145,6 +145,8 @@ function App() {
             <option value="openai">OpenAI (GPT-4o mini)</option>
             <option value="anthropic">Anthropic (Claude Haiku)</option>
             <option value="groq">Groq (Llama 3)</option>
+            <option value="lmstudio">LM-Studio (local)</option>
+            <option value="ollama">Ollama (local)</option>
           </select>
         </div>
 

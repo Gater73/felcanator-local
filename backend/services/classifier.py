@@ -5,6 +5,8 @@ from groq import Groq
 import os
 import json
 import re
+from urllib.parse import urlparse
+from typing import Optional
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -43,6 +45,37 @@ class ClassifierService:
         self.groq_key = os.getenv("GROQ_API_KEY")
         self.groq_client = Groq(api_key=self.groq_key) if self.groq_key else None
         if self.groq_client: logger.info("Cliente Groq inicializado.")
+
+        # Initialize LM-Studio (OpenAI-compatible endpoint)
+        self.lmstudio_base_url = self._normalize_openai_compatible_base_url(
+            os.getenv("LMSTUDIO_BASE_URL")
+        )
+        self.lmstudio_api_key = os.getenv("LMSTUDIO_API_KEY")
+        self.lmstudio_model = os.getenv("LMSTUDIO_MODEL")
+        if self.lmstudio_base_url:
+            # Many local OpenAI-compatible endpoints ignore api_key; still pass one to satisfy SDK.
+            self.lmstudio_client = OpenAI(
+                api_key=self.lmstudio_api_key or "lmstudio",
+                base_url=self.lmstudio_base_url,
+            )
+            logger.info("Cliente LM-Studio inicializado.")
+        else:
+            self.lmstudio_client = None
+
+        # Initialize Ollama (OpenAI-compatible endpoint)
+        self.ollama_base_url = self._normalize_openai_compatible_base_url(
+            os.getenv("OLLAMA_BASE_URL")
+        )
+        self.ollama_api_key = os.getenv("OLLAMA_API_KEY")
+        self.ollama_model = os.getenv("OLLAMA_MODEL")
+        if self.ollama_base_url:
+            self.ollama_client = OpenAI(
+                api_key=self.ollama_api_key or "ollama",
+                base_url=self.ollama_base_url,
+            )
+            logger.info("Cliente Ollama inicializado.")
+        else:
+            self.ollama_client = None
 
     def classify_video(self, metadata, transcript, provider=None):
         """Classify video content using the specified or default provider."""
@@ -108,6 +141,10 @@ class ClassifierService:
                 result = self._call_anthropic(prompt)
             elif active_provider == "groq":
                 result = self._call_groq(prompt)
+            elif active_provider == "lmstudio":
+                result = self._call_lmstudio(prompt)
+            elif active_provider == "ollama":
+                result = self._call_ollama(prompt)
             else:
                 logger.error(f"Provedor {active_provider} não suportado.")
                 return {"error": f"Provider {active_provider} not supported."}
@@ -118,6 +155,30 @@ class ClassifierService:
         except Exception as e:
             logger.error(f"Erro fatal na classificação com {active_provider}: {str(e)}", exc_info=True)
             return {"error": str(e)}
+
+    def _normalize_openai_compatible_base_url(self, base_url: Optional[str]) -> Optional[str]:
+        """
+        Normalize a base URL for OpenAI-compatible servers.
+        Many expect `http://host:port/v1`.
+        If the user sets `http://host:port`, append `/v1`.
+        """
+        if not base_url:
+            return None
+
+        base_url = base_url.strip().rstrip("/")
+        parsed = urlparse(base_url)
+        path = parsed.path or ""
+
+        # If it already ends with `/v1`, keep it.
+        if path == "/v1" or path.endswith("/v1"):
+            return base_url
+
+        # If path is empty or just `/`, append `/v1`.
+        if path in ["", "/"]:
+            return f"{base_url}/v1"
+
+        # Otherwise, append `/v1` if it's not already present at the end.
+        return f"{base_url}/v1"
 
     def _call_gemini(self, prompt):
         if not self.gemini_client: 
@@ -165,6 +226,94 @@ class ClassifierService:
         )
         logger.debug("Resposta do Groq recebida com sucesso.")
         return json.loads(response.choices[0].message.content)
+
+    def _call_lmstudio(self, prompt):
+        if not self.lmstudio_client:
+            logger.error("Tentativa de uso do LM-Studio falhou: base URL ausente.")
+            return {"error": "LM-Studio base URL missing (LMSTUDIO_BASE_URL)."}
+        if not self.lmstudio_model:
+            logger.error("Tentativa de uso do LM-Studio falhou: modelo ausente.")
+            return {"error": "LM-Studio model missing (LMSTUDIO_MODEL)."}
+
+        messages = [{"role": "user", "content": prompt}]
+
+        # Some OpenAI-compatible servers may not support `response_format`.
+        try:
+            response = self.lmstudio_client.chat.completions.create(
+                model=self.lmstudio_model,
+                messages=messages,
+                response_format={"type": "json_object"},
+            )
+        except Exception as e:
+            logger.warning(f"LM-Studio falhou com response_format, re-tentando sem. Erro: {str(e)}")
+            response = self.lmstudio_client.chat.completions.create(
+                model=self.lmstudio_model,
+                messages=messages,
+            )
+
+        # Be defensive: if the endpoint is wrong/unexpected, `choices` can be None.
+        content = None
+        try:
+            if getattr(response, "choices", None):
+                content = response.choices[0].message.content
+        except Exception:
+            content = None
+
+        if not content:
+            logger.error(f"Resposta inesperada do LM-Studio (sem choices/message.content). Response={str(response)[:300]}")
+            return {
+                "error": (
+                    "LM-Studio respondeu em formato inesperado. "
+                    "Verifique se `LMSTUDIO_BASE_URL` aponta para um endpoint OpenAI-compatible "
+                    "(ex.: http://localhost:1234/v1) e se o modelo em `LMSTUDIO_MODEL` existe."
+                )
+            }
+
+        logger.debug("Resposta do LM-Studio recebida com sucesso.")
+        return self._parse_json(content)
+
+    def _call_ollama(self, prompt):
+        if not self.ollama_client:
+            logger.error("Tentativa de uso do Ollama falhou: base URL ausente.")
+            return {"error": "Ollama base URL missing (OLLAMA_BASE_URL)."}
+        if not self.ollama_model:
+            logger.error("Tentativa de uso do Ollama falhou: modelo ausente.")
+            return {"error": "Ollama model missing (OLLAMA_MODEL)."}
+
+        messages = [{"role": "user", "content": prompt}]
+
+        try:
+            response = self.ollama_client.chat.completions.create(
+                model=self.ollama_model,
+                messages=messages,
+                response_format={"type": "json_object"},
+            )
+        except Exception as e:
+            logger.warning(f"Ollama falhou com response_format, re-tentando sem. Erro: {str(e)}")
+            response = self.ollama_client.chat.completions.create(
+                model=self.ollama_model,
+                messages=messages,
+            )
+
+        content = None
+        try:
+            if getattr(response, "choices", None):
+                content = response.choices[0].message.content
+        except Exception:
+            content = None
+
+        if not content:
+            logger.error(f"Resposta inesperada do Ollama (sem choices/message.content). Response={str(response)[:300]}")
+            return {
+                "error": (
+                    "Ollama respondeu em formato inesperado. "
+                    "Verifique se `OLLAMA_BASE_URL` aponta para um endpoint OpenAI-compatible "
+                    "(ex.: http://localhost:11434/v1) e se o modelo em `OLLAMA_MODEL` existe."
+                )
+            }
+
+        logger.debug("Resposta do Ollama recebida com sucesso.")
+        return self._parse_json(content)
 
     def _parse_json(self, text):
         try:
